@@ -1,0 +1,189 @@
+<link rel="stylesheet" type="text/css" href="/static/jslib/basic.css">
+<script type="text/javascript" src="/static/jslib/basic.js"></script>
+
+<body style="background-color: rgba( 0,0,0,0.95);">
+<div id=functions style="width:700px; text-align: right; margin: 10%; background-color: rgba( 255,255,255,0.98); border: 0px; border-radius: 30px; padding: 30px;">
+</div>
+
+	
+<script type="text/javascript">
+
+
+	var node1 = document.getElementById('functions');
+
+	var fragm1 = "<table>";
+
+	{% for v in funcs1 %}
+		fragm1 += "<tr class=\"funclist\"><td colspan=2>";
+		fragm1 += enabLabInp( { inpId : '{{ v }}', labText : '{{ v }}', labId : 'lab{{ v }}', inpType : 'checkbox' } );
+		fragm1 += "</td><td>";
+		fragm1 +=  option1({ class:'priorBehaviour', style:'', wrappStyle:'padding-top:40px;', class:'button', optList:[ "Priority-Behaviour", "lower", "equals:lower" ] });
+		fragm1 += "</td></tr>";
+	{% endfor %}
+
+	var selRole = [" -- Role -- "];
+
+	{% for v in roles %}
+		selRole.push("{{ v }}");
+
+	{% endfor %}
+
+	fragm1 += "<tr><td>" + option1({ id:'chooseRole', style:'', wrappStyle:'padding-top:20px;', class:'button', optList:selRole }) + "</td><td>";
+	fragm1 +=  button1({ id:'removeRoleRights', value:'Remove', style:'width:150px;', wrappStyle:'padding-top:20px;text-align:right;' }) + "</td><td>";	
+	fragm1 +=  button1({ id:'adaptRoleRights', value:'Save', style:'width:150px;', wrappStyle:'padding-top:20px;text-align:right;' }) + "</td></tr>";	
+
+
+	node1.innerHTML += fragm1 + "</table>";
+
+	var selRole = document.getElementById('chooseRole');
+	selRole.value = "{{ http.selRole }}";
+	
+	selRole.addEventListener( "change", (e) => {
+			//console.log( selRole.value );
+		
+			var dl = document.location.href;
+			
+			var baseUri;
+			
+			if( dl.indexOf("?") > -1 ){
+				baseUri = dl.split("?")[0];
+			} else {
+				baseUri = document.location.href;
+			}
+			
+			console.log( ">>>>>>>>>>>>>>>>  " + baseUri  + "?selRole=" + selRole.value );
+
+			document.location.href = baseUri + "?selRole=" + selRole.value;	
+
+
+			/*	
+			*/
+	});
+
+	var removeFuncConf = document.getElementById("removeRoleRights");
+
+	removeFuncConf.addEventListener("click", function(e){
+		e.preventDefault;	
+		alert("CLICK TEST");
+			
+		var onErr = function(err){ alert("ERROR: " + err ); }
+		var onSucc2 = function(resp){ 
+		
+			alert( 'SUCCESFULL -- ' + resp ); 
+			document.location.href = document.location.origin + document.location.pathname + "?selRole={{ http.selRole }}";
+		
+		}
+		//ajaxRequest("GET", "/doLogin", "user=" + user + "&password=" + pw, onSucc, onErr);
+	
+		//var chkd = document.querySelectorAll('[type=checkbox]');
+		var chkd = document.querySelectorAll('[class=funclist]');
+		
+		var functionalities = "";
+
+		[].forEach.call( chkd, ( v, i ) => {
+
+			var chkb = v.querySelector('[type=checkbox]');
+			//var priorbehav = v.querySelector('select');
+
+			if( chkb.checked ){
+				functionalities += chkb.id + "-";
+			}
+		});
+
+	
+		ajaxRequest( {
+			type:"GET",
+			uri:"/applicationAdapter",
+			//query:data,
+			query:"selRole=" + document.getElementById('chooseRole').value + "&functionalities=" + functionalities + "&action=remove",
+			// means if http-req was succesfull, not if applic. backend worked properly
+			onSuccess: onSucc2,
+			onError:onErr
+		} );
+
+	});
+
+	var saveFuncConf = document.getElementById("adaptRoleRights");
+
+	saveFuncConf.addEventListener("click", function(e){
+		e.preventDefault;	
+		alert("CLICK TEST");
+			
+		var onErr = function(err){ alert("ERROR: " + err ); }
+		var onSucc2 = function(resp){ 
+		
+			alert( 'SUCCESFULL -- ' + resp ); 
+			document.location.href = document.location.origin + document.location.pathname + "?selRole={{ http.selRole }}";
+		
+		}
+		//ajaxRequest("GET", "/doLogin", "user=" + user + "&password=" + pw, onSucc, onErr);
+	
+		//var chkd = document.querySelectorAll('[type=checkbox]');
+		var chkd = document.querySelectorAll('[class=funclist]');
+		
+		var functionalities = "";
+
+		[].forEach.call( chkd, ( v, i ) => {
+
+			var chkb = v.querySelector('[type=checkbox]');
+			var priorbehav = v.querySelector('select');
+
+			if( chkb.checked ){
+				functionalities += chkb.id + "_" + priorbehav.value + "-";
+			}
+		});
+
+	
+		ajaxRequest( {
+			type:"GET",
+			uri:"/applicationAdapter",
+			//query:data,
+			query:"selRole=" + document.getElementById('chooseRole').value + "&functionalities=" + functionalities + "&action=save",
+			// means if http-req was succesfull, not if applic. backend worked properly
+			onSuccess: onSucc2,
+			onError:onErr
+		} );
+
+	});
+
+	var priorHash = {
+		'&lt;' : 'lower',
+		'&lt;=' : 'equals:lower'
+	};
+
+	//PREPARE SWITCH CASE WITH INDEXOF, for THE CASE THAT EMPTY SPACES ARE A PART OF THE HASHKEYs 
+
+	{% for c in funcsByRole %}
+		if( '{{ c.0 }}' == 'all' || '{{ c.0 }}' == 'root' ) {
+			[].forEach.call( document.querySelectorAll('[type=checkbox]'), (v,i) => {
+				v.checked = true;
+				
+			});
+
+			[].forEach.call( document.querySelectorAll('select'), (v,i) => {
+				v.value = 'equals:lower';
+				
+			});
+	
+			selRole.value = "{{ http.selRole }}";
+
+		} else {
+			try {
+				var x = document.getElementById('{{ c.0 }}');
+				x.checked = true;
+				x.parentElement.parentElement.nextElementSibling.getElementsByTagName('select')[0].value = priorHash["{{ c.1 }}"];
+				console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n");
+				console.log('{{ c.1 }}');
+				console.log(priorHash["{{ c.1 }}"]);
+				//x.parentElement.parentElement.nextElementSibling.getElementsByTagName('select')[0].value = 'lower';
+			} catch( err ) {
+				console.log(err);
+			}
+		}
+	{% endfor %}		
+
+</script>
+
+
+<script type="text/javascript">
+</script>

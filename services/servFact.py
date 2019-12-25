@@ -1,0 +1,68 @@
+#from pythonlangutil.overload import Overload, signature
+import sys
+import os
+
+''' BIND SERVICES '''
+
+sys.path.append('/var/www/wsgi/services')
+
+import servLogin 
+from servLogin import *
+
+import servSearch 
+from servSearch import *
+
+import servRoleMan 
+from servRoleMan import *
+
+import servAddUser 
+from servAddUser import *
+
+import servAppAdapt 
+from servAppAdapt import *
+
+''' '''
+
+class ServFact( object ):
+	@classmethod
+	def serviceLogin( cls, env, start_resp ):
+		return ServLogin( env, start_resp ).auth() 	
+
+	@classmethod
+	def serviceSearch( cls, env, start_resp, rbc ):
+		#print( '\n\n\n?????????????????????????????????????????\n\n\n' )
+		#print( rbc )
+		#print('INTRO2')
+		rets = ServSearch( env, start_resp ).jsnResp( rbc ) 
+		#print rets
+		return rets
+
+	
+	@classmethod
+	def serviceAddUser( cls, env, start_resp, rbc ):
+		#print( '\n\n\n?????????????????????????????????????????\n\n\n' )
+		#print( rbc )
+		print('INTRO2')
+		rets = ServAddUser( env, start_resp, rbc ).run() 
+		print rets
+		return rets
+		#pass
+	
+	@classmethod
+	def serviceRoleMan( cls, env, start_resp, rbc ):
+		#print( '\n\n\n?????????????????????????????????????????\n\n\n' )
+		#print( rbc )
+		print('INTRO service ROLE MAN')
+		rets = ServRoleMan( env, start_resp, rbc ).run() 
+		print rets
+		return rets
+		#pass
+	
+	@classmethod
+	def serviceAppAdapt( cls, env, start_resp, rbc ):
+		#print( '\n\n\n?????????????????????????????????????????\n\n\n' )
+		#print( rbc )
+		print('\n\n\n\n\nINTRO22222222222222222222222222222222222222222222')
+		rets = ServAppAdapt( env, start_resp ).adaptAppConf( rbc ) 
+		#print rets
+		return rets
