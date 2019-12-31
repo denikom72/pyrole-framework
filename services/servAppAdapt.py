@@ -71,8 +71,11 @@ class ServAppAdapt( object ):
 		to_json = []
 
 		rets =[] 
-                print('ZZZZZZZZZZZZZZZZZZZZENNNNNNNNNNNNNNNNVIIIIIIIIIIIRRRONNN')
+                '''
+		print('ZZZZZZZZZZZZZZZZZZZZENNNNNNNNNNNNNNNNVIIIIIIIIIIIRRRONNN')
+		print(rbc['dbh'])
 		print('{}'.format( rbc['rbac'][0].getPrior() ), rbc['rbac'][0].getRolename(), rbc['rbac'][0].getRoleUser(), rbc['rbac'][0].getPriorBehav() )		
+		'''
 		#rp = RoleProps('placeholderForAllowedFunc', '{}'.format( rbc['rbac'][0].getPrior() ), rbc['rbac'][0].getRolename(), rbc['rbac'][0].getRoleUser(), rbc['rbac'][0].getPriorBehav())
 		
 		print('___________________________________________________  {}'.format( self.env['QUERY_STRING'] ))				
@@ -111,20 +114,28 @@ class ServAppAdapt( object ):
 				IMPORTANT -- ALL APP-ADAPT-METHODS DON'T HAVE ANY ROLE-PRIORITY-CHECKS INTO THE SQL-QUERIES,
 				JUST AN RBAC-CHECK BY ROUTING IT, CAUSE JUST ADMINS HAS THE PERSMISSION TO CHANGE THE AOO-BEHAVIOUR
 				'''
-				map( lambda x: DaoDataMan( rbc['dbh'], RoleProps( x.split('_')[0], 'prLevPlHld', self.qStr['selRole'], 'emailPlHld', x.split('_')[1] ) ).adaptApplic(), str( self.qStr['functionalities'] ).split('-') )
-			
+				#print('\n\n\n\n\n\n\nQUERRRYY FOR ADAPT APP+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n\n\n\n\n')
+				#print(str( self.qStr['functionalities'] ))
+
+				 
+				map( lambda x: DaoDataMan( rbc['dbh'], RoleProps( x.split('_')[0], '200', self.qStr['selRole'], 'emailPlHld', x.split('_')[1] ) ).adaptApplic(), str( self.qStr['functionalities'] ).split('-') )
+				#DaoDataMan( rbc['dbh'], RoleProps( 'HARDCODEDFUNC', '200', 'manager', 'emailPlHld', 'equals:lower' ) ).adaptApplic()
 
 			elif( self.qStr['action'] == 'remove' ):	
 				#raise Exception
-				map( lambda x: DaoDataMan({'foo':'bar'}, RoleProps( x.split('_')[0], 'prLevPlHld', self.qStr['selRole'], 'emailPlHld', 'behavPlchldr' ) ).removeFuncFromRole(), str( self.qStr['functionalities'] ).split('-') )
+				map( lambda x: DaoDataMan( rbc['dbh'], RoleProps( x.split('_')[0], 'prLevPlHld', self.qStr['selRole'], 'emailPlHld', 'behavPlchldr' ) ).removeFuncFromRole(), str( self.qStr['functionalities'] ).split('-') )
 
 				
 
 		except Exception as e:
+			print('\n\n\n\n\n\n++YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\n\n')
 			print( dir( e ) )	
 
 		finally:
-			pass
+			#raise Exception
+			print('\n\n\n\n\n\nYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\n\n')
+			rbc['dbh'].commit()
+			#pass
 
 		print('\n\n\n\nINTO APPADAPTCONF SERVICE\n\n\n\n\n')
 		self.start_response( self.status, self.resp_head )

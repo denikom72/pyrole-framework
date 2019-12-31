@@ -1,4 +1,5 @@
 import pprint
+import pdb
 
 class DecDB(object):
 
@@ -24,7 +25,7 @@ class DecDB(object):
 			print(fn(*args))
 			SQL = fn(*args)		
 			
-			if( 'testQuery' in kwargs ):
+			if( 'testQuery' in kwargs and kwargs['testQuery'] != [] ):
 				#print('\n\n\n\n\nSQL FOR APPEND\n\n\n')
 				
 				map( lambda x: SQL.append(x), kwargs['testQuery'] )
@@ -47,7 +48,9 @@ class DecDB(object):
 				SQL.append({ 'query': 'COMMIT', 'exec': [] })
 			
 				SQL.reverse()
+				
 				SQL.append({ 'query': 'START TRANSACTION', 'exec': [] })
+				
 				SQL.reverse()
 			
 			'''
@@ -75,7 +78,18 @@ class DecDB(object):
 		
 			res = []
 			#this.sth.execute( 'START TRANSACTION', [] )
-			map( lambda x : res.append( this.sth.execute( x['query'], x['exec'], multi=True ) ), SQL ) 
+
+			def lmbd1(x):
+				print(x['query'], ' __ ', x['exec'])
+				res.append( this.sth.execute( x['query'], x['exec'], multi=True ) )
+				print(' FOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO \n\n\n')
+				pprint.pprint(res)
+
+			#map( lambda x : res.append( this.sth.execute( x['query'], x['exec'], multi=True ) ), SQL ) 
+			
+			map( lambda x : lmbd1( x ), SQL ) 
+			
+			#raise Exception
 			#this.sth.execute( kwargs['commOrRollb'], [] )
 			
 			print('\n\n\n\n\n\nENDOFTHEUNIVERSE')
@@ -106,19 +120,20 @@ class DecDB(object):
 								print('\n\n\n\nENDQUERY')
 
 				''' THIS CODE-PART IS NECESSARY TO WRITE UNIT-TESTS EASIER FOR models WITH CRUD-OPERATIONS '''
-				if( 'test' in kwargs and kwargs['test'] == True ):
-					for ind in res:
-						for curs in ind:
-							print( 'Cursor: ', curs.with_rows )
-							if curs.with_rows:
-								record = this.sth.fetchall()
-								print('\n\n\n\nQUERY')
-								pprint.pprint(record)
-								''' THIS FUNCTION MUST BE PASS AS A PARAM FROM THE WRAPPED METHOD, like lambda a, b, c: ... '''
-								
-								map( lambda x: dtoList.append( tQDto( x ) ), record )
-								#map( lambda x: dtoList.append( x ), record )
-								print('\n\n\n\nENDQUERY')
+				#if( 'test' in kwargs and kwargs['test'] == True ):
+				#if( 'test' in kwargs  ):
+				for ind in res:
+					for curs in ind:
+						print( 'Cursor: ', curs.with_rows )
+						if curs.with_rows:
+							record = this.sth.fetchall()
+							print('\n\n\n\nQUERY')
+							pprint.pprint(record)
+							''' THIS FUNCTION MUST BE PASS AS A PARAM FROM THE WRAPPED METHOD, like lambda a, b, c: ... '''
+							
+							map( lambda x: dtoList.append( tQDto( x ) ), record )
+							#map( lambda x: dtoList.append( x ), record )
+							print('\n\n\n\nENDQUERY')
 						
 				#this.dbh.rollback()
 				print('\n\n\nDTOLISTTTTTTTTTTTTTT')
