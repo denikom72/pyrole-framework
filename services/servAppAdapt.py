@@ -123,7 +123,13 @@ class ServAppAdapt( object ):
 
 			elif( self.qStr['action'] == 'remove' ):	
 				#raise Exception
-				map( lambda x: DaoDataMan( rbc['dbh'], RoleProps( x.split('_')[0], 'prLevPlHld', self.qStr['selRole'], 'emailPlHld', 'behavPlchldr' ) ).removeFuncFromRole(), str( self.qStr['functionalities'] ).split('-') )
+				
+				#print("\n\n\nINTO REMOOOOOOOOOOOOOOOOOVVVVVVVVVEEEE\n\n\n")	
+				#pprint.pprint( str( self.qStr['functionalities'] ).split('-') )
+				#print('END INTO REMOOOVVEEE')
+				
+				map( lambda x: DaoDataMan( rbc['dbh'], RoleProps( x, '200', self.qStr['selRole'], 'emailPlHld', 'plchldr' ) ).removeFuncFromRole(), str( self.qStr['functionalities'] ).split('-') )
+				#DaoDataMan( rbc['dbh'], RoleProps( 'HARDCODEDFUNC', '200', 'manager', 'emailPlHld', 'equals:lower' ) ).removeFuncFromRole()
 
 				
 

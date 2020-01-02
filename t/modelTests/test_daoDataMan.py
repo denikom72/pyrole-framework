@@ -38,13 +38,13 @@ DBData = {	'host' : 'localhost',
 persNm = 'pers1'
 surname = 'surname1'
 position = 'noPosition'
-email = 'no88LOLXyXXXgckmailo3@mail.com'
+email = 'nox8LOLXyXXXgckmailo3@mail.com'
 approle = 'manager'
 
 ''' User just for auth-unit-test '''
 #usr = User('py5user@test.com', 'badpw123xy', '7')	
 
-rp = RoleProps( 'DFUNC', '200', approle, email, 'equals:lower' )
+rp = RoleProps( 'DFUNC7', '200', approle, email, 'equals:lower' )
 
 
 class TestDaoDataMan(unittest.TestCase):
@@ -209,6 +209,32 @@ class TestDaoDataMan(unittest.TestCase):
 		''' it isn't allowed to list roles with higher priority as the role-priority of the user which trigger selRoles-Method  '''
 		#[ self.assertFalse( bln ) for bln in map( lambda x: '{:d}'.format( int( x[1] ) ) > '{:d}'.format( int( rp.getPrior() ) ), ddmRes ) ]
 
+	def test_removeFuncFromRole( self ):
+		
+		print("\n\n\n\n ADAPT APPLIC PART INTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO \n\n\n\n", rp.getRolename() )
+		sql4ap = [ {     'query': ''' 	SELECT *, %s AS rlName FROM role_abil AS ra 
+					
+						WHERE ra.roleId = ( SELECT ro.id FROM roles AS ro WHERE ro.name LIKE %s ) ''',
+                                
+				 'exec': [ rp.getRolename(), rp.getRolename() ]
+                } ]	
+			
+		
+				
+		#ddm = DaoDataMan( TestDaoDataMan.DBH, RoleProps( 'DFUNC5', '200', 'manager', 'emailPlHld', 'lower' ) ).adaptApplic()
+		
+		#ddm = DaoDataMan( TestDaoDataMan.DBH, rp ).removeFuncFromRole()
+		
+		ddm = DaoDataMan( TestDaoDataMan.DBH, rp ).removeFuncFromRole( testQuery = sql4ap, testQueryDto = lambda x: RoleProps( x[1], 'plch', x[3], 'plch', x[2] ).setRoleId( int( x[0] ) ), test = True )
+		ddmRes = []
+
+		map( lambda x: ddmRes.append( [ u'{}'.format( x.getRolename() ), u'{}'.format( x.getFunct() ), u'{}'.format( x.getPriorBehav() ) ] ), ddm )
+		bln = True
+		bln = False if [ rp.getRolename(), rp.getFunct(), rp.getPriorBehav()  ] not in ddmRes else True
+		self.assertFalse( bln )	
+		
+		
+	
 
 
 
