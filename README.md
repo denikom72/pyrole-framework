@@ -1,2 +1,2 @@
 # pyrole-framework
-Fullstack-Framework ( js-framewrok and python-mvc-framework )  for role-based Webapplications with a role-configurator on the admin-panel. Techstack: Python3,  Javascript-Dom, Mysql
+Tiny-Framework for role-based Webapplications with a ui-role-configurator on the admin-panel. Techstack: Python3, wsgi, Javascript, Mysql
